@@ -4,3 +4,6 @@ UserSettings
 *.vsconfig
 *.csproj
 *.sln
+.vs
+obj
+Assets/1.Project/RawResources

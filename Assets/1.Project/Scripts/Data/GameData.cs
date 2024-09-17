@@ -3,6 +3,7 @@ using UnityEngine;
 public class GameData
 {
     public RWGlobalFactorConfig metaAttributeConfig = null;
+    public RWTableDataSkill skillConfig = null;
 
     //public GameConfig config = null;
     //public TanukiCharacterConfig characterConfig = null;
@@ -48,6 +49,7 @@ public class GameData
     public void Init()
     {
         metaAttributeConfig = Resources.Load<RWGlobalFactorConfig>("ScriptableObject/RWGlobalFactorConfig");
+        skillConfig = Resources.Load<RWTableDataSkill>("ScriptableObject/TableDataSkill");
         //config = Resources.Load<GameConfig>("GameConfig/GameConfig");
         //characterConfig = Resources.Load<TanukiCharacterConfig>("GameConfig/CharacterConfig");
         //weaponConfig = Resources.Load<WeaponConfig>("GameConfig/WeaponConfig");

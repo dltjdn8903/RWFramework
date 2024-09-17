@@ -1,19 +1,10 @@
 using DG.Tweening;
-using System;
 using System.Collections.Generic;
-using UniRx;
+using UniRx.Triggers;
 using UnityEditor;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
-public enum EMoveType
-{
-    None,
-    Left,
-    Right,
-    Up,
-    Down,
-}
+
 
 public enum ECharacterState
 {
@@ -22,6 +13,7 @@ public enum ECharacterState
     Idle,
     Walk,
     Run,
+    Action,
     Interaction,
     Die,
 }
@@ -82,7 +74,7 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
     public ECharacterState CharacterState
     {
         get => characterState;
-        set => ChangeState(value);
+        private set => ChangeState(value);
     }
 
     public static SFCharacterPresenterPlayer CreateCharacter(SFCharacterPlayerInitData data)
@@ -163,6 +155,11 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
                     StartMove();
                 }
                 break;
+            case ECharacterState.Action:
+                {
+                    StartAction();
+                }
+                break;
             case ECharacterState.Interaction:
                 {
                     StartInteraction();
@@ -196,6 +193,17 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
             viewInstance.transform.SetParent(transform);
             viewInstance.transform.localPosition = Vector3.zero;
             viewInstance.transform.localScale = Vector3.one;
+
+            var dispasible = DisposableObjectFactory.GetOrAdd(gameObject);
+            dispasible.SubscribeEventOnToggle(view.OnTriggerEnterAsObservable(), collider =>
+            {
+                if (view.isSelfCollider(collider) == true)
+                {
+                    return;
+                }
+
+                Debug.Log($"collider: {collider.gameObject.name}");
+            });
         });
 
         //TanukiCharView.LoadByPrefabNameAsync(prefabName,
@@ -233,21 +241,30 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
             InitCharacter(initData);
             playerCharacterList.Add(this);
         }
+
+        CharacterState = ECharacterState.Idle;
     }
 
     private void StartIdle()
     {
-        view.State = AnimStateParameterName.Idle;
+        view.PlayAnim(AnimStateParameterName.Idle);
     }
 
     private void StartMove()
     {
-        view.State = AnimStateParameterName.Move;
+        view.PlayAnim(AnimStateParameterName.Move);
     }
+
+    private SkillData currentActionData = null;
 
     private void StartAction()
     {
-
+        var skillData = RWTableDataSkill.Config.GetSkillTableData(currentActionData.key);
+        view.PlayAnim(skillData.animStateParameter, () =>
+        {
+            CharacterState = prevDirection == Vector3.zero ? ECharacterState.Idle : ECharacterState.Walk;
+            RotateCharacter(prevDirection);
+        });
     }
 
     private void StartInteraction()
@@ -275,11 +292,29 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
 
     private void InputCheck()
     {
+        if (CharacterState == ECharacterState.Idle || CharacterState == ECharacterState.Walk)
+        {
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                currentActionData = RWTableDataSkill.Config.GetSkillTableData("Skill_Punch");
+                CharacterState = ECharacterState.Action;
+            }
+        }
+
         Vector3 movePosition = Vector3.zero;
+        Vector3 direction = Vector3.zero;
         movePosition.x += Input.GetKey(KeyCode.D) ? 1 : 0;
         movePosition.x -= Input.GetKey(KeyCode.A) ? 1 : 0;
         movePosition.z += Input.GetKey(KeyCode.W) ? 1 : 0;
         movePosition.z -= Input.GetKey(KeyCode.S) ? 1 : 0;
+
+        direction = movePosition.normalized;
+
+        if (CharacterState == ECharacterState.Action)
+        {
+            prevDirection = direction;
+            return;
+        }
 
         if (movePosition.magnitude != 0)
         {
@@ -294,31 +329,38 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
             return;
         }
 
-        var direction = movePosition.normalized;
+        direction = movePosition.normalized;
         var speed = GetFactor("WalkSpeed");
 
         move.Move(speed, direction);
 
-        if (prevDirection != direction)
+        if (CharacterState == ECharacterState.Walk)
         {
-            rotateTween.Kill();
-
-            Vector3 resultDirection = Vector3.zero;
-            rotateTween = DOTween.To(() => resultDirection, 
-                                     value =>
-                                     {
-                                         resultDirection = value;
-                                         resultDirection += transform.position;
-                                         view.transform.LookAt(resultDirection);
-                                     },
-                                     direction,
-                                     0.15f)
-                                     .From(prevDirection)
-                                     .SetEase(Ease.OutSine);
-
-            prevDirection = direction;
+            if (prevDirection != direction)
+            {
+                RotateCharacter(direction);
+            }
         }
 
+        prevDirection = direction;
+    }
+
+    private void RotateCharacter(Vector3 direction)
+    {
+        rotateTween.Kill();
+
+        Vector3 resultDirection = Vector3.zero;
+        rotateTween = DOTween.To(() => resultDirection,
+                                 value =>
+                                 {
+                                     resultDirection = value;
+                                     resultDirection += transform.position;
+                                     view.transform.LookAt(resultDirection);
+                                 },
+                                 direction,
+                                 0.15f)
+                                 .From(prevDirection)
+                                 .SetEase(Ease.OutQuad);
     }
 
     [Header("Ability Test")]

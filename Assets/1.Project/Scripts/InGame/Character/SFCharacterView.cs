@@ -1,4 +1,7 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -14,11 +17,20 @@ public class AnimStateParameterName
     public static string Move => "Move";
 }
 
+[Serializable]
+public class FormColliderData
+{
+    public string formKey;
+    public List<BoxCollider> colliders;
+}
+
 public class SFCharacterView : MonoBehaviour
 {
     public Animator animator = null;
 
     private RuntimeAnimatorController currentController = null;
+
+    public List<FormColliderData> formColliderList = new List<FormColliderData>();
 
     private string combatForm = string.Empty;
     public string CombatForm 
@@ -27,24 +39,9 @@ public class SFCharacterView : MonoBehaviour
         set => combatForm = value; 
     }
 
-    private string state = string.Empty;
-    public string State
-    {
-        get => state;
-        set
-        {
-            if (value != state)
-            {
-                PlayAnim(value);
-            }
-        }
-    }
-
-
     private void Awake()
     {
         CombatForm = CombatFormControllerPath.KickBoxing;
-        State = AnimStateParameterName.Idle;
     }
 
     private void Start()
@@ -73,8 +70,43 @@ public class SFCharacterView : MonoBehaviour
 
     }
 
-    public void PlayAnim(string animName)
+    Coroutine endEventCorutine = null;
+
+    IEnumerator IEStartEndEvent(string animName, Action onEndEvent)
+    {
+        bool isStart = false;
+        while (!isStart)
+        {
+            yield return null;
+            if (animator.GetCurrentAnimatorStateInfo(0).IsName(animName) == true)
+            {
+                isStart = true;
+            }
+        }
+
+        AnimatorStateInfo currentState = animator.GetCurrentAnimatorStateInfo(0);
+        yield return new WaitForSeconds(currentState.length / currentState.speed);
+        onEndEvent?.Invoke();
+    }
+
+    public void PlayAnim(string animName, Action onEndEvent = null)
     {
         animator.SetTrigger(animName);
+
+        if (endEventCorutine != null)
+        {
+            StopCoroutine(endEventCorutine);
+        }
+
+        endEventCorutine = StartCoroutine(IEStartEndEvent(animName, onEndEvent));
+    }
+
+    public bool isSelfCollider(Collider collider)
+    {
+        bool result = false;
+
+        var data = formColliderList.Find(value => value.colliders.Contains(collider) == false);
+        result = data != null;
+        return result;
     }
 }

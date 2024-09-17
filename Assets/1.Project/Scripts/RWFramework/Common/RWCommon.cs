@@ -103,8 +103,6 @@ public static class RWCommon
             }
         }
 
-
-
         return result;
     }
 

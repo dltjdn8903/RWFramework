@@ -1,20 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UniRx;
-using UnityEditor;
 using UnityEngine;
 
 
-
-//public interface Interactable
-//{
-//    public abstract void Interaction();
-//}
-
-//public interface Moveable
-//{
-//    public void Move();
-//}
 
 public abstract class Interactable
 {

@@ -25,6 +25,12 @@ public class AddFunctor<T> : IAddFunctor
         callbackAction = onAction;
     }
 
+    public AddFunctor(IObservable<T> observable, Action<T> onAction)
+    {
+        this.observable = observable;
+        callbackAction = onAction;
+    }
+
     void IAddFunctor.Add(UniRx.CompositeDisposable disposables)
     {
         var observableObj = observable == null ? MessageBroker.Default.Receive<T>() : observable;
@@ -98,6 +104,18 @@ public class DisposableObjectFactory : MonoBehaviour
     public void SubscribeMessageOnToggle<T>(Action<T> action)
     {
         var addFunctor = new AddFunctor<T>(action);
+        addFunctorList.Add(addFunctor);
+    }
+
+    public void SubscribeEvent<T>(IObservable<T> observableObj, Action<T> action)
+    {
+        var disposableObj = UniRx.ObservableExtensions.Subscribe(observableObj, action);
+        disposableObj.AddTo(disposables);
+    }
+
+    public void SubscribeEventOnToggle<T>(IObservable<T> observableObj, Action<T> action)
+    {
+        var addFunctor = new AddFunctor<T>(observableObj, action);
         addFunctorList.Add(addFunctor);
     }
 

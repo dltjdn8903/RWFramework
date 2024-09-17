@@ -1,7 +1,10 @@
-using System.Collections;
+using DG.Tweening;
+using System;
 using System.Collections.Generic;
+using UniRx;
 using UnityEditor;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public enum EMoveType
 {
@@ -12,36 +15,50 @@ public enum EMoveType
     Down,
 }
 
+public enum ECharacterState
+{
+    None,
+    Init,
+    Idle,
+    Walk,
+    Run,
+    Interaction,
+    Die,
+}
+
 public class PlayerTalk : Interactable
 {
-    public void Interaction()
+    private SFCharacterPresenterPlayer presenter = null;
+
+    private PlayerTalk() { }
+
+    public PlayerTalk(SFCharacterPresenterPlayer presenter)
     {
+        this.presenter = presenter;
+    }
+    public override void Interaction()
+    {
+
     }
 }
 
-//public class PlayerWalk : Moveable
-//{
-//    private SFCharacterBasePresenter<SFCharacterModelPlayer> presenter = null;
+public class PlayerWalk : Moveable
+{
+    private SFCharacterPresenterPlayer presenter = null;
 
-//    private PlayerWalk() { }
+    private PlayerWalk() { }
 
-//    public PlayerWalk(SFCharacterBasePresenter<SFCharacterModelPlayer> presenter)
-//    {
-//        this.presenter = presenter;
-//    }
+    public PlayerWalk(SFCharacterPresenterPlayer presenter)
+    {
+        this.presenter = presenter;
+    }
 
-//    public void Move()
-//    {
-
-//    }
-//}
-
-//public class SFCharacterModelPlayer: SFCharacterModelBase
-//{
-//    private int characterNumber = -1;
-//    public Interactable interaction = null;
-//    public Moveable move = null;
-//}
+    public override void Move(float speed, Vector3 direction)
+    {
+        Vector3 movePosition = direction.normalized * speed * Time.deltaTime;
+        presenter.transform.position += movePosition;
+    }
+}
 
 public class SFCharacterPlayerInitData : SFCharacterBaseInitData
 {
@@ -51,12 +68,22 @@ public class SFCharacterPlayerInitData : SFCharacterBaseInitData
 [CanEditMultipleObjects]
 public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
 {
-    //public SFCharacterViewBase view = null;
-    //private SFCharacterModelPlayer data = new SFCharacterModelPlayer();
+    public static List<SFCharacterPresenterPlayer> playerCharacterList = new List<SFCharacterPresenterPlayer>();
 
     public SFAbilityComponent abilityComponent = null;
 
     public List<RWFactorDataSetBase> initFactorDataSetList = new List<RWFactorDataSetBase>();
+
+    public Interactable interaction = null;
+    public Moveable move = null;
+
+    private ECharacterState characterState = ECharacterState.None;
+
+    public ECharacterState CharacterState
+    {
+        get => characterState;
+        set => ChangeState(value);
+    }
 
     public static SFCharacterPresenterPlayer CreateCharacter(SFCharacterPlayerInitData data)
     {
@@ -66,11 +93,19 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
         result = Instantiate(resource, data.initPosition, Quaternion.identity);
         result.InitCharacter(data);
 
+        playerCharacterList.Add(result);
+
         return result;
     }
 
     private void Awake()
     {
+        if (view != null)
+        {
+            Destroy(view.gameObject);
+            CharacterState = ECharacterState.Init;
+        }
+
         AddSubscribes();
     }
 
@@ -80,24 +115,14 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
 
         abilityComponent.SubscribeFactor("HP", (prev, current) =>
         {
-            //var maxHP = GetFactor("MaxHP");
-            //if (current.Value > maxHP)
-            //{
-            //    current.Value = maxHP;
-            //}
-
-            //if (current.Value <= 0)
-            //{
-            //    current.Value = 0;
-            //}
-
             Debug.Log($"prevValue: {prev}, currentValue: {current}");
         });
     }
 
     private void Start()
     {
-        InitPlayer();
+        //currentState.Value = ECharacterState.Init;
+        //move.Move(GetFactor("MoveSpeed"), Vector3.zero);
     }
 
     private void InitPlayer()
@@ -105,6 +130,51 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
         foreach (var item in initFactorDataSetList)
         {
             abilityComponent.AddDataSet(item);
+        }
+    }
+
+    private void ChangeState(ECharacterState currentState)
+    {
+        if (currentState == characterState)
+        {
+            return;
+        }
+
+        characterState = currentState;
+        switch (currentState)
+        {
+            case ECharacterState.Init:
+                {
+                    StartInit();
+                }
+                break;
+            case ECharacterState.Idle:
+                {
+                    StartIdle();
+                }
+                break;
+            case ECharacterState.Walk:
+                {
+                    StartMove();
+                }
+                break;
+            case ECharacterState.Run:
+                {
+                    StartMove();
+                }
+                break;
+            case ECharacterState.Interaction:
+                {
+                    StartInteraction();
+                }
+                break;
+            case ECharacterState.Die:
+                {
+                    StartDie();
+                }
+                break;
+            default:
+                break;
         }
     }
 
@@ -117,20 +187,16 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
     {
         data = new SFCharacterModelPlayer();
 
-        var viewResourcePath = "Prefab/Character/CharacterPresenterPlayer";
-        var resource = Resources.Load<GameObject>(viewResourcePath);
-        var viewInstance = Instantiate(resource, initData.initPosition, Quaternion.identity);
-        view.InitView(viewInstance);
-        //result.InitCharacter(data);
+        interaction = new PlayerTalk(this);
+        move = new PlayerWalk(this);
 
-        //SFCharacterViewBase.LoadPrefabByName("Prefab/Character/CharacterPresenterPlayer", viewInstance => 
-        //{
-        //    var aa = viewInstance as SFCharacterViewPlayer;
-        //});
-
-        //initData.interaction = new PlayerTalk();
-        //initData.move = new PlayerWalk(this);
-
+        SFCharacterView.LoadPrefabByName("Prefab/Character/View/CharacterViewPrimrose", viewInstance =>
+        {
+            view = viewInstance;
+            viewInstance.transform.SetParent(transform);
+            viewInstance.transform.localPosition = Vector3.zero;
+            viewInstance.transform.localScale = Vector3.one;
+        });
 
         //TanukiCharView.LoadByPrefabNameAsync(prefabName,
         //    (charView) =>
@@ -147,7 +213,6 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
         //        m_charChangeFunc.SetupView(charView);
         //    }
         //);
-
     }
 
     private float GetFactor(string tag)
@@ -156,38 +221,105 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
         return result;
     }
 
-    //void Update()
-    //{
-    //    InputCheck();
-    //}
+    private void StartInit()
+    {
+        InitPlayer();
 
-    //private void InputCheck()
-    //{
-    //    if (Input.GetKeyDown(KeyCode.A))
-    //    {
+        //임시 초기화
+        {
+            SFCharacterPlayerInitData initData = new SFCharacterPlayerInitData();
+            initData.initPosition = Vector3.zero;
 
-    //    }
+            InitCharacter(initData);
+            playerCharacterList.Add(this);
+        }
+    }
 
-    //    if (Input.GetKeyDown(KeyCode.D))
-    //    {
+    private void StartIdle()
+    {
+        view.State = AnimStateParameterName.Idle;
+    }
 
-    //    }
+    private void StartMove()
+    {
+        view.State = AnimStateParameterName.Move;
+    }
 
-    //    if (Input.GetKeyDown(KeyCode.W))
-    //    {
+    private void StartAction()
+    {
 
-    //    }
+    }
 
-    //    if (Input.GetKeyDown(KeyCode.S))
-    //    {
+    private void StartInteraction()
+    {
 
-    //    }
-    //}
+    }
 
-    //private void MoveHorizontal()
-    //{
-    //    initData.move.Move();
-    //}
+    private void StartHit()
+    {
+
+    }
+
+    private void StartDie()
+    {
+
+    }
+
+    void Update()
+    {
+        InputCheck();
+    }
+
+    private Vector3 prevDirection = Vector3.zero;
+    private Tween rotateTween = null;
+
+    private void InputCheck()
+    {
+        Vector3 movePosition = Vector3.zero;
+        movePosition.x += Input.GetKey(KeyCode.D) ? 1 : 0;
+        movePosition.x -= Input.GetKey(KeyCode.A) ? 1 : 0;
+        movePosition.z += Input.GetKey(KeyCode.W) ? 1 : 0;
+        movePosition.z -= Input.GetKey(KeyCode.S) ? 1 : 0;
+
+        if (movePosition.magnitude != 0)
+        {
+            CharacterState = ECharacterState.Walk;
+        }
+        else
+        {
+            if (CharacterState == ECharacterState.Walk)
+            {
+                CharacterState = ECharacterState.Idle;
+            }
+            return;
+        }
+
+        var direction = movePosition.normalized;
+        var speed = GetFactor("WalkSpeed");
+
+        move.Move(speed, direction);
+
+        if (prevDirection != direction)
+        {
+            rotateTween.Kill();
+
+            Vector3 resultDirection = Vector3.zero;
+            rotateTween = DOTween.To(() => resultDirection, 
+                                     value =>
+                                     {
+                                         resultDirection = value;
+                                         resultDirection += transform.position;
+                                         view.transform.LookAt(resultDirection);
+                                     },
+                                     direction,
+                                     0.15f)
+                                     .From(prevDirection)
+                                     .SetEase(Ease.OutSine);
+
+            prevDirection = direction;
+        }
+
+    }
 
     [Header("Ability Test")]
     public string testMetaFactorKey = string.Empty;
@@ -214,6 +346,11 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
     public void RemoveArmor()
     {
         abilityComponent.RemoveAttributeSet(armor);
+    }
+
+    public void ChangeState()
+    {
+        CharacterState = ECharacterState.Init;
     }
 }
 
@@ -248,6 +385,11 @@ public class SFCharacterPresenterPlayerEditor : Editor
         if (GUILayout.Button("RemoveArmor"))
         {
             player.RemoveArmor();
+        }
+
+        if (GUILayout.Button("ChangeState"))
+        {
+            player.ChangeState();
         }
     }
 }

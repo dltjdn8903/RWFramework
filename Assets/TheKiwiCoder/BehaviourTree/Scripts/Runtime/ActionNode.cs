@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SFCharacterViewPlayer : SFCharacterViewBase
-{
+
+namespace TheKiwiCoder {
+    public abstract class ActionNode : Node {
+
+    }
 }

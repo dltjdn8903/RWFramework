@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5532725472662394684}
-  - component: {fileID: 9086548487435807420}
   m_Layer: 0
   m_Name: CharacterViewPlayer
   m_TagString: Untagged
@@ -32,20 +31,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8695434731010210028}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9086548487435807420
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2132161283152691431}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c8ca72c3642ce9342bf2c1bdfc04b3c7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animator: {fileID: 0}
-  currentController: {fileID: 0}
 --- !u!1 &5571870264283635605
 GameObject:
   m_ObjectHideFlags: 0
@@ -57,6 +42,7 @@ GameObject:
   - component: {fileID: 8695434731010210028}
   - component: {fileID: 1324879228077052877}
   - component: {fileID: 8429268511639221030}
+  - component: {fileID: 20602619829737728}
   m_Layer: 0
   m_Name: CharacterPresenterPlayer
   m_TagString: Untagged
@@ -92,8 +78,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5fd735c2043c23408e17fd2662fe41d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  view: {fileID: 9086548487435807420}
+  view: {fileID: 0}
   abilityComponent: {fileID: 8429268511639221030}
+  initFactorDataSetList: []
+  characterState:
+    value: 0
+  testMetaFactorKey: 
+  armor: {fileID: 0}
 --- !u!114 &8429268511639221030
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -106,4 +97,55 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9bbd6a86849ab945ad88a8b153cb39f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drivedAttributeList: []
+  factorDataSetList: []
+  internalDataList: []
+  externalDataList: []
+--- !u!114 &20602619829737728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5571870264283635605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fc7159acf9bd0d468ab638e721dc5f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  factorDataSet:
+    attributeTag: Player
+    calculateSequence: 0
+    attributeList:
+    - factorTag: MaxHP
+      type: 1
+      value: 100
+    - factorTag: HP
+      type: 1
+      value: 100
+    - factorTag: MaxMP
+      type: 1
+      value: 20
+    - factorTag: MP
+      type: 1
+      value: 20
+    - factorTag: MaxSP
+      type: 1
+      value: 40
+    - factorTag: SP
+      type: 1
+      value: 40
+    - factorTag: PhysicalPower
+      type: 1
+      value: 10
+    - factorTag: MagicalPower
+      type: 1
+      value: 8
+    - factorTag: PhysicalDefence
+      type: 1
+      value: 4
+    - factorTag: MagicalDefence
+      type: 1
+      value: 2
+    - factorTag: WalkSpeed
+      type: 1
+      value: 10

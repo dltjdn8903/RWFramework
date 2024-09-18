@@ -53,6 +53,7 @@ MonoBehaviour:
     colliders:
     - {fileID: 8933982048831058151}
     - {fileID: 2706062565615094068}
+  currentSkillObject: {fileID: 8999329337839145537}
 --- !u!54 &5453380831842683894
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -173,6 +174,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -3949267529974323933, guid: 4cafd511abc6ecc4b8e8c90f85925171, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2706062565615094068}
+    - targetCorrespondingSourceObject: {fileID: -3949267529974323933, guid: 4cafd511abc6ecc4b8e8c90f85925171, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8999329337839145537}
   m_SourcePrefab: {fileID: 100100000, guid: 4cafd511abc6ecc4b8e8c90f85925171, type: 3}
 --- !u!1 &268666288265900543 stripped
 GameObject:
@@ -231,6 +235,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.2, y: 0.2, z: 0.2}
   m_Center: {x: -0.1, y: 0, z: 0}
+--- !u!114 &8999329337839145537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7185842751239261741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21ee878f1f0ecd24b9d123761483071f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skillData:
+    ownerID: 0
+    skillKey: 
+    factorSet: []
 --- !u!95 &8926919899369658015 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 4cafd511abc6ecc4b8e8c90f85925171, type: 3}

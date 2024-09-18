@@ -49,7 +49,8 @@ MonoBehaviour:
     isUnsigned: 1
   globalMetaFactorList:
   - key: System_Damaged
-    retunTag: HP
+    returnKey: 
+    factorTag: HP
     type: 2
     metaFactorList:
     - tag: PhysicalPower
@@ -73,7 +74,8 @@ MonoBehaviour:
         type: 2
         metaAttributeList: []
   - key: System_Benefit
-    retunTag: HP
+    returnKey: 
+    factorTag: HP
     type: 1
     metaFactorList:
     - tag: PhysicalPower
@@ -87,7 +89,8 @@ MonoBehaviour:
       type: 1
       metaAttributeList: []
   - key: Skill_Punch
-    retunTag: PhysicalPower
+    returnKey: System_Damaged
+    factorTag: PhysicalPower
     type: 2
     metaFactorList:
     - tag: PhysicalPower
@@ -101,7 +104,8 @@ MonoBehaviour:
         type: 3
         metaAttributeList: []
   - key: Skill_Heal
-    retunTag: MagicalPower
+    returnKey: System_Benefit
+    factorTag: PhysicalPower
     type: 1
     metaFactorList:
     - tag: MagicalPower

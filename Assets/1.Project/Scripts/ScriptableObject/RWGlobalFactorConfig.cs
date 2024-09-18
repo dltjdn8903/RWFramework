@@ -8,7 +8,8 @@ using UnityEngine;
 public class FactorMetaSet
 {
     public string key;
-    public string retunTag;
+    public string returnKey;
+    public string factorTag;
     public CalculateType type = CalculateType.Add;
     public List<MetaFactor> metaFactorList = new List<MetaFactor>();
 }

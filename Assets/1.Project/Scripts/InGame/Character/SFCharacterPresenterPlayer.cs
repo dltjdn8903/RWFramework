@@ -265,6 +265,16 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
             CharacterState = prevDirection == Vector3.zero ? ECharacterState.Idle : ECharacterState.Walk;
             RotateCharacter(prevDirection);
         });
+
+        var skillInitData = new SLSkillInitData();
+        skillInitData.ownerID = gameObject.GetInstanceID();
+        skillInitData.skillKey = currentActionData.key;
+
+        var addOneData = abilityComponent.CreateFactorByMeta(testMetaFactorKey);
+        skillInitData.factorSet.Add(addOneData);
+        skillInitData.factorSet.Add(new RWFactorData() { type = CalculateType.Subtract, factorTag = "WalkSpeed", value = 2});
+
+        view.currentSkillObject.SetSkillData(skillInitData);
     }
 
     private void StartInteraction()

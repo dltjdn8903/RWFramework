@@ -1,18 +1,37 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
+[Serializable]
+public class SLSkillInitData
+{
+    public int ownerID;
+    public string skillKey;
+    public List<RWFactorData> factorSet = new List<RWFactorData>();
+}
+
 public class SLSkillBase : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public SLSkillInitData skillData = null;
+
+    public bool IsReady
     {
-        
+        get
+        {
+            return skillData.factorSet.Count > 0;
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void SetSkillData(SLSkillInitData data)
     {
-        
+        skillData = data;
+    }
+
+    public SLSkillInitData GetSkillData()
+    {
+        return skillData;
     }
 }

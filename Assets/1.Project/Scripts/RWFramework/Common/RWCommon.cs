@@ -66,7 +66,7 @@ public static class RWCommon
 
         var meta = RWGlobalFactorConfig.Config.GetGolbalMetaFactorSet(metaKey);
         var result = new RWFactorData();
-        result.factorTag = meta.retunTag;
+        result.factorTag = meta.factorTag;
         result.type = meta.type;
         result.value = CalculateMetaFactorList(meta.metaFactorList, result.value, CalculatorMetaFactor);
         return result;

@@ -32,6 +32,8 @@ public class SFCharacterView : MonoBehaviour
 
     public List<FormColliderData> formColliderList = new List<FormColliderData>();
 
+    public SLSkillBase currentSkillObject = null;
+
     private string combatForm = string.Empty;
     public string CombatForm 
     { 
@@ -108,5 +110,15 @@ public class SFCharacterView : MonoBehaviour
         var data = formColliderList.Find(value => value.colliders.Contains(collider) == false);
         result = data != null;
         return result;
+    }
+
+    public void StartSkill()
+    {
+
+    }
+
+    public void EndSkill()
+    {
+
     }
 }

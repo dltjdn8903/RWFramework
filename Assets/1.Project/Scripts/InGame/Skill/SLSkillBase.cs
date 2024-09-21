@@ -13,25 +13,44 @@ public class SLSkillInitData
     public List<RWFactorData> factorSet = new List<RWFactorData>();
 }
 
+public class SkillInteractionData
+{
+    public int ownerID;
+    public List<SkillFactorMeta> skillFactorMetaList = new List<SkillFactorMeta>();
+    public List<RWFactorData> factorSet = new List<RWFactorData>();
+}
+
 public class SLSkillBase : MonoBehaviour
 {
-    public SLSkillInitData skillData = null;
+    public int ownerID;
 
-    public bool IsReady
+    public string skillKey;
+
+    public List<SkillFactorMeta> skillFactorMetaList = new List<SkillFactorMeta>();
+
+    public List<RWFactorData> factorSet = new List<RWFactorData>();
+
+    public void InitSkillData(SLSkillInitData data)
     {
-        get
+        var tableSkillMeta = RWTableDataSkill.Config.GetSkillTableData(data.skillKey);
+        ownerID = data.ownerID;
+        skillKey = data.skillKey;
+        factorSet = data.factorSet;
+        skillFactorMetaList = tableSkillMeta.skillFactorMetaList;
+        foreach (var factor in factorSet)
         {
-            return skillData.factorSet.Count > 0;
+            factor.owerID = ownerID;
+            factor.instanceID = gameObject.GetInstanceID();
         }
     }
 
-    public void SetSkillData(SLSkillInitData data)
+    public SkillInteractionData GetSkillInteractionData()
     {
-        skillData = data;
-    }
+        var result = new SkillInteractionData();
+        result.ownerID = ownerID;
+        result.skillFactorMetaList = skillFactorMetaList;
+        result.factorSet = factorSet;
 
-    public SLSkillInitData GetSkillData()
-    {
-        return skillData;
+        return result;
     }
 }

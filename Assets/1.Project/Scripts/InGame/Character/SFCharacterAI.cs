@@ -26,31 +26,30 @@ public class SFCharacterAI : SFCharacterBasePresenter
     private void AddSubscribes()
     {
         var dispasible = DisposableObjectFactory.GetOrAdd(gameObject);
-        dispasible.SubscribeEventOnToggle(view.OnTriggerEnterAsObservable(), collider =>
-        {
-            if (view.isSelfCollider(collider) == true)
-            {
-                return;
-            }
-
-            var skill = collider.GetComponent<SLSkillBase>();
-            if (skill != null)
-            {
-                var skillData = skill.GetSkillData();
-                foreach (var factor in skillData.factorSet)
-                {
-                    abilityComponent.AddFactorData(factor);
-                    Debug.Log($"SFCharacterAI OnTrigger collider: {collider.gameObject.name}");
-                }
-
-                //abilityComponent.InteractWithExternalFactorDataSet("System_Damaged", skillData.factorSet);
-            }
-
-        });
+        dispasible.SubscribeEventOnToggle(view.OnTriggerEnterAsObservable(), HitEvent);
 
         abilityComponent.SubscribeFactor("HP", (prev, current) =>
         {
             Debug.Log($"prevValue: {prev}, currentValue: {current}");
         });
+    }
+
+    private void HitEvent(Collider collider)
+    {
+        if (view.isSelfCollider(collider) == true)
+        {
+            return;
+        }
+
+        var skill = collider.GetComponent<SLSkillBase>();
+        if (skill != null)
+        {
+            var skillInteractionData = skill.GetSkillInteractionData();
+            foreach (var factorMeta in skillInteractionData.skillFactorMetaList)
+            {
+                var factorData = skillInteractionData.factorSet.Find(value => value.factorTag == factorMeta.factorTag);
+                abilityComponent.InteractWithExternalFactorData(factorMeta.metaKey, factorData);
+            }
+        }
     }
 }

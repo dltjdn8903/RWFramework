@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Tutorials.Core.Editor;
 
 
 [Serializable]
@@ -66,7 +67,7 @@ public static class RWCommon
 
         var meta = RWGlobalFactorConfig.Config.GetGolbalMetaFactorSet(metaKey);
         var result = new RWFactorData();
-        result.factorTag = meta.factorTag;
+        result.factorTag = meta.returnKey.IsNullOrEmpty() == true ? meta.factorTag : meta.returnKey;
         result.type = meta.type;
         result.value = CalculateMetaFactorList(meta.metaFactorList, result.value, CalculatorMetaFactor);
         return result;

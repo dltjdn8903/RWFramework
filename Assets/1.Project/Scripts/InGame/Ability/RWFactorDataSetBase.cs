@@ -9,12 +9,16 @@ using UnityEngine;
 public class RWFactorData
 {
     public string factorTag;
+    public int owerID = 0;
+    public int instanceID = 0;
     public CalculateType type = CalculateType.Add;
     public float value = 0f;
 
     public RWFactorData Duplicate()
     {
         RWFactorData result = new RWFactorData();
+        result.owerID = owerID;
+        result.instanceID = instanceID;
         result.factorTag = factorTag;
         result.type = type;
         result.value = value;
@@ -45,7 +49,7 @@ public class RWFactorDataSet
     public string attributeTag = string.Empty;
     public int calculateSequence = 1;
 
-    public List<RWFactorData> attributeList = new List<RWFactorData>();
+    public List<RWFactorData> factorDataList = new List<RWFactorData>();
 }
 
 [Serializable]
@@ -53,11 +57,12 @@ public abstract class RWFactorDataSetBase : MonoBehaviour
 {
     public RWFactorDataSet factorDataSet = new RWFactorDataSet();
 
-    protected virtual void Awake()
+    public void InitDataSet(int owerID)
     {
-        foreach (var item in factorDataSet.attributeList)
+        foreach (var item in factorDataSet.factorDataList)
         {
-            item.factorTag = $"{gameObject.GetInstanceID()}|{item.factorTag}";
-        } 
+            item.owerID = owerID;
+            item.instanceID = gameObject.GetInstanceID();
+        }
     }
 }

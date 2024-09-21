@@ -34,16 +34,46 @@ public class SFCharacterView : MonoBehaviour
 
     public SLSkillBase currentSkillObject = null;
 
+    public SLCheckAnimationEvent animEventChecker = null;
+
     private string combatForm = string.Empty;
-    public string CombatForm 
-    { 
-        get => combatForm; 
-        set => combatForm = value; 
+    public string CombatForm
+    {
+        get => combatForm;
+        set
+        {
+            combatForm = value;
+            var formData = formColliderList.Find(value => value.formKey == combatForm);
+            if (formData != null) 
+            {
+                animEventChecker.SetViewEvent(
+                    () => 
+                    {
+                        foreach (var item in formColliderList)
+                        {
+                            foreach (var collider in item.colliders)
+                            {
+                                collider.enabled = true;
+                            }
+                        }
+                    }, 
+                    () =>
+                    {
+                        foreach (var item in formColliderList)
+                        {
+                            foreach (var collider in item.colliders)
+                            {
+                                collider.enabled = false;
+                            }
+                        }
+                    });
+            }
+        }
     }
 
     private void Awake()
     {
-        CombatForm = CombatFormControllerPath.KickBoxing;
+        CombatForm = "KickBoxing";
     }
 
     private void Start()

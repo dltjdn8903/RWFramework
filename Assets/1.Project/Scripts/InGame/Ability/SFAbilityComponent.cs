@@ -23,11 +23,23 @@ public enum EAbilityComponentState
 
 public class SFAbilityComponent : MonoBehaviour
 {
+    [SerializeField] private List<RWFactorDataSetBase> factorDataSetList = new List<RWFactorDataSetBase>();
+
+    [SerializeField] private List<RWFactorData> internalDataList = new List<RWFactorData>();
+    [SerializeField] private List<RWFactorData> externalDataList = new List<RWFactorData>();
+
+    private Dictionary<string, float> previousfactorDataDictionary = new Dictionary<string, float>();
+    private Dictionary<string, ReactiveProperty<float>> resultDataDictionary = new Dictionary<string, ReactiveProperty<float>>();
+
+    private int owerID = 0;
+
+    private bool isChanged = false;
+
     private EAbilityComponentState state = EAbilityComponentState.PauseRecalculate;
-    public EAbilityComponentState State 
+    public EAbilityComponentState State
     {
         get => state;
-        set 
+        set
         {
             if (value == EAbilityComponentState.None)
             {
@@ -37,15 +49,10 @@ public class SFAbilityComponent : MonoBehaviour
         }
     }
 
-    [SerializeField] private List<RWFactorDataSetBase> factorDataSetList = new List<RWFactorDataSetBase>();
-
-    [SerializeField] private List<RWFactorData> internalDataList = new List<RWFactorData>();
-    [SerializeField] private List<RWFactorData> externalDataList = new List<RWFactorData>();
-
-    private Dictionary<string, float> previousfactorDataDictionary = new Dictionary<string, float>();
-    private Dictionary<string, ReactiveProperty<float>> resultDataDictionary = new Dictionary<string, ReactiveProperty<float>>();
-
-    private bool isChanged = false;
+    private void Awake()
+    {
+        owerID = gameObject.GetInstanceID();
+    }
 
     private void Start()
     {
@@ -61,7 +68,7 @@ public class SFAbilityComponent : MonoBehaviour
 
         factorDataSetList.Add(attributeSet);
         factorDataSetList = factorDataSetList.OrderBy(value => value.factorDataSet.calculateSequence).ToList();
-        internalDataList.AddRange(attributeSet.factorDataSet.attributeList);
+        internalDataList.AddRange(attributeSet.factorDataSet.factorDataList);
 
         internalDataList = internalDataList.OrderBy(value => value.type).ToList();
 
@@ -79,7 +86,7 @@ public class SFAbilityComponent : MonoBehaviour
 
     public void RemoveAttributeSet(RWFactorDataSetBase attributeSet)
     {
-        foreach (var item in attributeSet.factorDataSet.attributeList)
+        foreach (var item in attributeSet.factorDataSet.factorDataList)
         {
             internalDataList.Remove(item);
         }
@@ -182,6 +189,12 @@ public class SFAbilityComponent : MonoBehaviour
 
     public void InteractWithExternalFactorData(string metaKey, RWFactorData externalFactorData)
     {
+        var overlapFactor = externalDataList.Find(value => value.owerID == externalFactorData.owerID && value.instanceID == externalFactorData.instanceID && value.factorTag == externalFactorData.factorTag);
+        if (overlapFactor != null)
+        {
+            return;
+        }
+
         var internalDictionary = RWCommon.FactorConvertToDictionaryByList(internalDataList);
 
         var tempDataList = new List<RWFactorData>();
@@ -303,6 +316,16 @@ public class SFAbilityComponent : MonoBehaviour
         var internalDictionary = RWCommon.FactorConvertToDictionaryByList(internalDataList);
         var externalDictionary = RWCommon.FactorConvertToDictionaryByList(externalFactorDataSet);
 
+        var resultFactor = RWCommon.InteractFactor(metaKey, internalDictionary, externalDictionary);
+        externalDataList.Add(resultFactor);
+
+        isChanged = true;
+        RecalculateAttributeList();
+    }
+
+    public void InteractWithExternalFactorDictionary(string metaKey, Dictionary<string, float> externalDictionary)
+    {
+        var internalDictionary = RWCommon.FactorConvertToDictionaryByList(internalDataList);
         var resultFactor = RWCommon.InteractFactor(metaKey, internalDictionary, externalDictionary);
         externalDataList.Add(resultFactor);
 

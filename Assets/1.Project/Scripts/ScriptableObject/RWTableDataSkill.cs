@@ -1,8 +1,15 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
+[Serializable]
+public class SkillFactorMeta
+{
+    public string factorTag;
+    public string metaKey;
+}
 
 [Serializable]
 public class SkillData
@@ -10,6 +17,7 @@ public class SkillData
     public string key;
     public string animStateParameter;
     public string objectPath;
+    public List<SkillFactorMeta> skillFactorMetaList = new List<SkillFactorMeta>();
 }
 
 public class RWTableDataSkill : ScriptableObject

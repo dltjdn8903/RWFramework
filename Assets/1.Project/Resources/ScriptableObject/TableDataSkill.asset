@@ -16,3 +16,8 @@ MonoBehaviour:
   - key: Skill_Punch
     animStateParameter: Jab
     objectPath: Prefab/Skill/SkillPunch
+    skillFactorMetaList:
+    - factorTag: PhysicalPower
+      metaKey: Damaged
+    - factorTag: MagicalPower
+      metaKey: Slow

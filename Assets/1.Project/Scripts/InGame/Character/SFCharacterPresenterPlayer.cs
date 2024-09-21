@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using System.Collections.Generic;
 using UniRx.Triggers;
 using UnityEditor;
@@ -68,7 +68,7 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
 
     public Interactable interaction = null;
     public Moveable move = null;
-
+    
     private ECharacterState characterState = ECharacterState.None;
 
     public ECharacterState CharacterState
@@ -92,6 +92,9 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
 
     private void Awake()
     {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
         if (view != null)
         {
             Destroy(view.gameObject);
@@ -121,6 +124,7 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
     {
         foreach (var item in initFactorDataSetList)
         {
+            item.InitDataSet(gameObject.GetInstanceID());
             abilityComponent.AddDataSet(item);
         }
     }
@@ -233,7 +237,7 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
     {
         InitPlayer();
 
-        //�ӽ� �ʱ�ȭ
+        //임시 초기화
         {
             SFCharacterPlayerInitData initData = new SFCharacterPlayerInitData();
             initData.initPosition = Vector3.zero;
@@ -263,18 +267,20 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
         view.PlayAnim(skillData.animStateParameter, () =>
         {
             CharacterState = prevDirection == Vector3.zero ? ECharacterState.Idle : ECharacterState.Walk;
-            RotateCharacter(prevDirection);
+            RotateView(Vector3.zero);
         });
 
         var skillInitData = new SLSkillInitData();
         skillInitData.ownerID = gameObject.GetInstanceID();
         skillInitData.skillKey = currentActionData.key;
 
-        var addOneData = abilityComponent.CreateFactorByMeta(testMetaFactorKey);
+        var addOneData = abilityComponent.CreateFactorByMeta("Skill_Punch");
         skillInitData.factorSet.Add(addOneData);
-        skillInitData.factorSet.Add(new RWFactorData() { type = CalculateType.Subtract, factorTag = "WalkSpeed", value = 2});
 
-        view.currentSkillObject.SetSkillData(skillInitData);
+        var addTwoData = abilityComponent.CreateFactorByMeta("Skill_Slow");
+        skillInitData.factorSet.Add(addTwoData);
+
+        view.currentSkillObject.InitSkillData(skillInitData);
     }
 
     private void StartInteraction()
@@ -294,30 +300,42 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
 
     void Update()
     {
+        RotateCharacter();
+        MoveCharacter();
         InputCheck();
+    }
+
+    public Transform camPivot = null;
+    private void RotateCharacter()
+    {
+        float mouseX = Input.GetAxis("Mouse X");
+        float mouseY = Input.GetAxis("Mouse Y");
+
+        if (mouseX != 0 || mouseY != 0)
+        {
+            var rotationY = mouseX == 0 ? camPivot.localRotation.eulerAngles.y : camPivot.localRotation.eulerAngles.y + mouseX;
+            var rotationX = mouseY == 0 ? camPivot.localRotation.eulerAngles.x : camPivot.localRotation.eulerAngles.x - mouseY;
+            var resultRotatin = new Vector3(rotationX, rotationY, camPivot.localRotation.z);
+            camPivot.localRotation = Quaternion.Euler(resultRotatin);
+        }
     }
 
     private Vector3 prevDirection = Vector3.zero;
     private Tween rotateTween = null;
 
-    private void InputCheck()
+    private void MoveCharacter()
     {
-        if (CharacterState == ECharacterState.Idle || CharacterState == ECharacterState.Walk)
-        {
-            if (Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                currentActionData = RWTableDataSkill.Config.GetSkillTableData("Skill_Punch");
-                CharacterState = ECharacterState.Action;
-            }
-        }
+        float rad = camPivot.localRotation.eulerAngles.y * Mathf.Deg2Rad;
+        float z = Mathf.Cos(rad);
+        float x = Mathf.Sin(rad);
+        Vector3 direction = new Vector3(x, 0, z);
+        Vector3 vecticalDirection = Vector3.Cross(direction, Vector3.up);
 
         Vector3 movePosition = Vector3.zero;
-        Vector3 direction = Vector3.zero;
-        movePosition.x += Input.GetKey(KeyCode.D) ? 1 : 0;
-        movePosition.x -= Input.GetKey(KeyCode.A) ? 1 : 0;
-        movePosition.z += Input.GetKey(KeyCode.W) ? 1 : 0;
-        movePosition.z -= Input.GetKey(KeyCode.S) ? 1 : 0;
-
+        movePosition -= Input.GetKey(KeyCode.D) ? vecticalDirection : Vector3.zero;
+        movePosition += Input.GetKey(KeyCode.A) ? vecticalDirection : Vector3.zero;
+        movePosition += Input.GetKey(KeyCode.W) ? direction : Vector3.zero;
+        movePosition -= Input.GetKey(KeyCode.S) ? direction : Vector3.zero;
         direction = movePosition.normalized;
 
         if (CharacterState == ECharacterState.Action)
@@ -339,23 +357,33 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
             return;
         }
 
-        direction = movePosition.normalized;
-        var speed = GetFactor("WalkSpeed");
-
-        move.Move(speed, direction);
+        var speed = GetFactor("MoveSpeed");
+        transform.localPosition += direction * speed * Time.deltaTime;
 
         if (CharacterState == ECharacterState.Walk)
         {
             if (prevDirection != direction)
             {
-                RotateCharacter(direction);
+                RotateView(direction);
             }
         }
 
         prevDirection = direction;
     }
 
-    private void RotateCharacter(Vector3 direction)
+    private void InputCheck()
+    {
+        if (CharacterState == ECharacterState.Idle || CharacterState == ECharacterState.Walk)
+        {
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                currentActionData = RWTableDataSkill.Config.GetSkillTableData("Skill_Punch");
+                CharacterState = ECharacterState.Action;
+            }
+        }
+    }
+
+    private void RotateView(Vector3 direction)
     {
         rotateTween.Kill();
 
@@ -372,38 +400,6 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
                                  .From(prevDirection)
                                  .SetEase(Ease.OutQuad);
     }
-
-    [Header("Ability Test")]
-    public string testMetaFactorKey = string.Empty;
-
-    public void ApplyTestMetaFactorDamage()
-    {
-        var SkillTest = abilityComponent.CreateFactorByMeta(testMetaFactorKey);
-        AdjustFactor("System_Damaged", SkillTest);
-    }
-
-    public void ApplyTestMetaFactorBenefit()
-    {
-        var SkillTest = abilityComponent.CreateFactorByMeta(testMetaFactorKey);
-        AdjustFactor("System_Benefit", SkillTest);
-    }
-
-    public SFAttributeSetArmor armor = null;
-
-    public void AddArmor()
-    {
-        abilityComponent.AddDataSet(armor);
-    }
-
-    public void RemoveArmor()
-    {
-        abilityComponent.RemoveAttributeSet(armor);
-    }
-
-    public void ChangeState()
-    {
-        CharacterState = ECharacterState.Init;
-    }
 }
 
 
@@ -419,30 +415,10 @@ public class SFCharacterPresenterPlayerEditor : Editor
 
         SFCharacterPresenterPlayer player = (SFCharacterPresenterPlayer)target;
 
-        if (GUILayout.Button("ApplyTestMetaFactorDamage"))
-        {
-            player.ApplyTestMetaFactorDamage();
-        }
-
-        if (GUILayout.Button("ApplyTestMetaFactorBenefit"))
-        {
-            player.ApplyTestMetaFactorBenefit();
-        }
-
-        if (GUILayout.Button("AddArmor"))
-        {
-            player.AddArmor();
-        }
-
-        if (GUILayout.Button("RemoveArmor"))
-        {
-            player.RemoveArmor();
-        }
-
-        if (GUILayout.Button("ChangeState"))
-        {
-            player.ChangeState();
-        }
+        //if (GUILayout.Button("ApplyTestMetaFactorDamage"))
+        //{
+        //    player.ApplyTestMetaFactorDamage();
+        //}
     }
 }
 #endif

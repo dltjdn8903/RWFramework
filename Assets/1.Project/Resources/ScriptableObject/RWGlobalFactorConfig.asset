@@ -19,6 +19,9 @@ MonoBehaviour:
   - factorTag: Skill_Heal_Multiplier
     type: 3
     value: 1.5
+  - factorTag: Skill_Slow_Multiplier
+    type: 3
+    value: 1.2
   globalFactorInfomationList:
   - targetTag: HP
     bindingTagList:
@@ -48,9 +51,9 @@ MonoBehaviour:
     bindingTagList: []
     isUnsigned: 1
   globalMetaFactorList:
-  - key: System_Damaged
-    returnKey: 
-    factorTag: HP
+  - key: Damaged
+    returnKey: HP
+    factorTag: PhysicalPower
     type: 2
     metaFactorList:
     - tag: PhysicalPower
@@ -73,7 +76,7 @@ MonoBehaviour:
         isLimitZero: 0
         type: 2
         metaAttributeList: []
-  - key: System_Benefit
+  - key: Heal
     returnKey: 
     factorTag: HP
     type: 1
@@ -88,10 +91,20 @@ MonoBehaviour:
       isLimitZero: 0
       type: 1
       metaAttributeList: []
-  - key: Skill_Punch
-    returnKey: System_Damaged
-    factorTag: PhysicalPower
+  - key: Slow
+    returnKey: MoveSpeed
+    factorTag: MagicalPower
     type: 2
+    metaFactorList:
+    - tag: MagicalPower
+      isInternalFactor: 0
+      isLimitZero: 0
+      type: 1
+      metaAttributeList: []
+  - key: Skill_Punch
+    returnKey: 
+    factorTag: PhysicalPower
+    type: 1
     metaFactorList:
     - tag: PhysicalPower
       isInternalFactor: 1
@@ -104,8 +117,8 @@ MonoBehaviour:
         type: 3
         metaAttributeList: []
   - key: Skill_Heal
-    returnKey: System_Benefit
-    factorTag: PhysicalPower
+    returnKey: 
+    factorTag: MagicalPower
     type: 1
     metaFactorList:
     - tag: MagicalPower
@@ -118,3 +131,13 @@ MonoBehaviour:
         isLimitZero: 0
         type: 3
         metaAttributeList: []
+  - key: Skill_Slow
+    returnKey: 
+    factorTag: MagicalPower
+    type: 1
+    metaFactorList:
+    - tag: MagicalPower
+      isInternalFactor: 1
+      isLimitZero: 0
+      type: 1
+      metaAttributeList: []

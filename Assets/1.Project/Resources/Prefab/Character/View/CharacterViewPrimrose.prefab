@@ -54,6 +54,7 @@ MonoBehaviour:
     - {fileID: 8933982048831058151}
     - {fileID: 2706062565615094068}
   currentSkillObject: {fileID: 8999329337839145537}
+  animEventChecker: {fileID: 1887879560847484414}
 --- !u!54 &5453380831842683894
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -62,7 +63,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5948174821422120138}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 0.0000001
   m_Drag: 0
   m_AngularDrag: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -168,6 +169,9 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 4cafd511abc6ecc4b8e8c90f85925171, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1887879560847484414}
     - targetCorrespondingSourceObject: {fileID: 2968471814226696945, guid: 4cafd511abc6ecc4b8e8c90f85925171, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8933982048831058151}
@@ -200,10 +204,27 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 0.2, y: 0.2, z: 0.2}
   m_Center: {x: -0.1, y: 0, z: 0}
+--- !u!1 &2758795766859748959 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 4cafd511abc6ecc4b8e8c90f85925171, type: 3}
+  m_PrefabInstance: {fileID: 3064805047994673934}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1887879560847484414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2758795766859748959}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc919a4a26637504dbf7c916430e00c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &3243408181387758821 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4cafd511abc6ecc4b8e8c90f85925171, type: 3}
@@ -231,7 +252,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 0.2, y: 0.2, z: 0.2}
   m_Center: {x: -0.1, y: 0, z: 0}
@@ -247,10 +268,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21ee878f1f0ecd24b9d123761483071f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skillData:
-    ownerID: 0
-    skillKey: 
-    factorSet: []
+  ownerID: 0
+  skillKey: 
+  skillFactorMetaList: []
+  factorSet: []
 --- !u!95 &8926919899369658015 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 4cafd511abc6ecc4b8e8c90f85925171, type: 3}

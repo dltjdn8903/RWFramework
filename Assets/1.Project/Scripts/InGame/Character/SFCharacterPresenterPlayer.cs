@@ -191,7 +191,7 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
         interaction = new PlayerTalk(this);
         move = new PlayerWalk(this);
 
-        SFCharacterView.LoadPrefabByName("Prefab/Character/View/CharacterViewPrimrose", viewInstance =>
+        SFCharacterView.LoadPrefabByName("Prefab/Character/View/Primrose", viewInstance =>
         {
             view = viewInstance;
             viewInstance.transform.SetParent(transform);

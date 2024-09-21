@@ -9,16 +9,19 @@ public class SFCharacterAI : SFCharacterBasePresenter
 
     public List<RWFactorDataSetBase> initFactorDataSetList = new List<RWFactorDataSetBase>();
 
+    private static string viewPath = "Prefab/Character/View/";
+
     private void Awake()
     {
+        InitAbility();
         AddSubscribes();
-        InitPlayer();
     }
 
-    private void InitPlayer()
+    private void InitAbility()
     {
         foreach (var item in initFactorDataSetList)
         {
+            item.InitDataSet(gameObject.GetInstanceID());
             abilityComponent.AddDataSet(item);
         }
     }
@@ -31,6 +34,17 @@ public class SFCharacterAI : SFCharacterBasePresenter
         abilityComponent.SubscribeFactor("HP", (prev, current) =>
         {
             Debug.Log($"prevValue: {prev}, currentValue: {current}");
+        });
+    }
+
+    public void InitCharacter(string viewName)
+    {
+        SFCharacterView.LoadPrefabByName($"{viewPath}{viewName}", viewInstance =>
+        {
+            view = viewInstance;
+            viewInstance.transform.SetParent(transform);
+            viewInstance.transform.localPosition = Vector3.zero;
+            viewInstance.transform.localScale = Vector3.one;
         });
     }
 

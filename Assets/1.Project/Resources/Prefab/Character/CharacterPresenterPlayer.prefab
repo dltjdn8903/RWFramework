@@ -339,7 +339,7 @@ MonoBehaviour:
   view: {fileID: 0}
   abilityComponent: {fileID: 8429268511639221030}
   initFactorDataSetList: []
-  camZoomer: {fileID: 6519685365849543127}
+  camZoomer: {fileID: 6924341044898037522}
   camPivot: {fileID: 4633275711529097542}
 --- !u!114 &8429268511639221030
 MonoBehaviour:

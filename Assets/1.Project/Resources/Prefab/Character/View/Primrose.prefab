@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5453380831842683894}
   - component: {fileID: 2143759490834029860}
   m_Layer: 0
-  m_Name: CharacterViewPrimrose
+  m_Name: Primrose
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -6,5 +6,4 @@ public class SLPlayerCamera : MonoBehaviour
     {
         Debug.Log($"resultRotatin: {transform.localRotation}");
     }
-
 }

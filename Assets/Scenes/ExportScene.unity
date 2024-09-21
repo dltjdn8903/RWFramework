@@ -4198,7 +4198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   factorDataSet:
-    attributeTag: 
+    attributeTag: Armor
     calculateSequence: 1
     factorDataList:
     - factorTag: HP
@@ -9474,6 +9474,11 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+--- !u!4 &2040940480 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6924341044898037522, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
+  m_PrefabInstance: {fileID: 5496988697593405448}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2056534167
 GameObject:
   m_ObjectHideFlags: 0
@@ -10604,6 +10609,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 1324879228077052877, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
+      propertyPath: camZoomer
+      value: 
+      objectReference: {fileID: 2040940480}
+    - target: {fileID: 1324879228077052877, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
       propertyPath: testFactor.tag
       value: HP
       objectReference: {fileID: 0}
@@ -10655,37 +10664,33 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3024967207322726244, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
+      propertyPath: m_Name
+      value: ZoomPivot
+      objectReference: {fileID: 0}
+    - target: {fileID: 4633275711529097542, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 11
+      objectReference: {fileID: 0}
     - target: {fileID: 5571870264283635605, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
       propertyPath: m_Name
       value: CharacterPresenterPlayer
       objectReference: {fileID: 0}
-    - target: {fileID: 6924341044898037522, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 2.1
+    - target: {fileID: 5865468569115469440, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
+      propertyPath: m_Name
+      value: CamRotator
       objectReference: {fileID: 0}
-    - target: {fileID: 6924341044898037522, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -3
+    - target: {fileID: 5865468569115469440, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 6924341044898037522, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.99539626
-      objectReference: {fileID: 0}
-    - target: {fileID: 6924341044898037522, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.095845714
-      objectReference: {fileID: 0}
-    - target: {fileID: 6924341044898037522, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6924341044898037522, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
+    - target: {fileID: 6519685365849543127, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 6924341044898037522, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 11
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8695434731010210028, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -10728,7 +10733,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
-    - {fileID: 9086548487435807420, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
+    - {fileID: 0}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 8695434731010210028, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
@@ -10740,82 +10745,24 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8695434731010210028, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1365038560}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5571870264283635605, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 5496988697593405454}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
---- !u!1 &5496988697593405449 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5571870264283635605, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
-  m_PrefabInstance: {fileID: 5496988697593405448}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5496988697593405453 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8695434731010210028, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
   m_PrefabInstance: {fileID: 5496988697593405448}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5496988697593405454
+--- !u!114 &5496988697593405454 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 7154537383500636637, guid: ba3cae58a4c70c348805e2c1093dac2a, type: 3}
+  m_PrefabInstance: {fileID: 5496988697593405448}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5496988697593405449}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2fc7159acf9bd0d468ab638e721dc5f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  factorDataSet:
-    attributeTag: Player
-    calculateSequence: 0
-    factorDataList:
-    - factorTag: HP
-      owerID: 0
-      instanceID: 0
-      type: 1
-      value: 100
-    - factorTag: MaxHP
-      owerID: 0
-      instanceID: 0
-      type: 1
-      value: 100
-    - factorTag: MP
-      owerID: 0
-      instanceID: 0
-      type: 1
-      value: 20
-    - factorTag: MaxMP
-      owerID: 0
-      instanceID: 0
-      type: 1
-      value: 20
-    - factorTag: MoveSpeed
-      owerID: 0
-      instanceID: 0
-      type: 1
-      value: 1.5
-    - factorTag: PhysicalPower
-      owerID: 0
-      instanceID: 0
-      type: 1
-      value: 10
-    - factorTag: MagicalPower
-      owerID: 0
-      instanceID: 0
-      type: 1
-      value: 5
-    - factorTag: PhysicalDefence
-      owerID: 0
-      instanceID: 0
-      type: 1
-      value: 4
-    - factorTag: MagicalDefence
-      owerID: 0
-      instanceID: 0
-      type: 1
-      value: 2
 --- !u!1 &6535239024185873326
 GameObject:
   m_ObjectHideFlags: 0

@@ -300,9 +300,28 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
 
     void Update()
     {
+        ZoomCharacter();
         RotateCharacter();
         MoveCharacter();
         InputCheck();
+    }
+
+    public Transform camZoomer = null;
+    public void ZoomCharacter()
+    {
+        var zoomValue = Input.GetAxis("Mouse ScrollWheel") * 1.0f;
+        var result = camZoomer.localPosition.z + zoomValue;
+        if (result < 0)
+        {
+            result = 0;
+        }
+
+        if (result > 1.5)
+        {
+            result = 1.5f;
+        }
+
+        camZoomer.localPosition = new Vector3(camZoomer.localPosition.x, camZoomer.localPosition.y, result);
     }
 
     public Transform camPivot = null;

@@ -1,7 +1,9 @@
 ﻿using DG.Tweening;
 using System.Collections.Generic;
+using System.Windows.Input;
 using UniRx.Triggers;
 using UnityEditor;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
 
 
@@ -156,7 +158,7 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
                 break;
             case ECharacterState.Run:
                 {
-                    StartMove();
+                    StartRun();
                 }
                 break;
             case ECharacterState.Action:
@@ -205,8 +207,6 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
                 {
                     return;
                 }
-
-                Debug.Log($"collider: {collider.gameObject.name}");
             });
         });
 
@@ -259,18 +259,25 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
         view.PlayAnim(AnimStateParameterName.Move);
     }
 
+    private void StartRun()
+    {
+        view.PlayAnim(AnimStateParameterName.Run);
+    }
+
     private SkillData currentActionData = null;
 
     private void StartAction()
     {
         var skillData = RWTableDataSkill.Config.GetSkillTableData(currentActionData.key);
-        view.PlayAnim(skillData.animStateParameter, () =>
-        {
-            CharacterState = prevDirection == Vector3.zero ? ECharacterState.Idle : ECharacterState.Walk;
-            RotateView(Vector3.zero);
-        });
+        view.PlayAnim(skillData.animStateParameter, 
+                      null, 
+                      () =>
+                      {
+                          CharacterState = prevDirection == Vector3.zero ? ECharacterState.Idle : ECharacterState.Walk;
+                          RotateView(Vector3.zero);
+                      });
 
-        var skillInitData = new SLSkillInitData();
+        var skillInitData = new SLSkillPunchInitData();
         skillInitData.ownerID = gameObject.GetInstanceID();
         skillInitData.skillKey = currentActionData.key;
 
@@ -279,6 +286,9 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
 
         var addTwoData = abilityComponent.CreateFactorByMeta("Skill_Slow");
         skillInitData.factorSet.Add(addTwoData);
+
+        skillInitData.moveCharacterTransform = transform;
+        skillInitData.moveDirection = prevDirection;
 
         view.currentSkillObject.InitSkillData(skillInitData);
     }
@@ -357,6 +367,8 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
         movePosition -= Input.GetKey(KeyCode.S) ? direction : Vector3.zero;
         direction = movePosition.normalized;
 
+        var isRun = Input.GetKey(KeyCode.LeftShift);
+
         if (CharacterState == ECharacterState.Action)
         {
             prevDirection = direction;
@@ -365,21 +377,21 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
 
         if (movePosition.magnitude != 0)
         {
-            CharacterState = ECharacterState.Walk;
+            CharacterState = isRun == false ? ECharacterState.Walk : ECharacterState.Run;
         }
         else
         {
-            if (CharacterState == ECharacterState.Walk)
+            if (CharacterState == ECharacterState.Walk || CharacterState == ECharacterState.Run)
             {
                 CharacterState = ECharacterState.Idle;
             }
             return;
         }
 
-        var speed = GetFactor("MoveSpeed");
+        var speed = (isRun == false ? GetFactor("WalkSpeed") : GetFactor("RunSpeed"));
         transform.localPosition += direction * speed * Time.deltaTime;
 
-        if (CharacterState == ECharacterState.Walk)
+        if (CharacterState == ECharacterState.Walk || CharacterState == ECharacterState.Run)
         {
             if (prevDirection != direction)
             {
@@ -392,7 +404,7 @@ public class SFCharacterPresenterPlayer : SFCharacterBasePresenter
 
     private void InputCheck()
     {
-        if (CharacterState == ECharacterState.Idle || CharacterState == ECharacterState.Walk)
+        if (CharacterState == ECharacterState.Idle || CharacterState == ECharacterState.Walk || CharacterState == ECharacterState.Run)
         {
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {

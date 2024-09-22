@@ -6,7 +6,7 @@ using UnityEngine;
 
 
 [Serializable]
-public class SLSkillInitData
+public class SLSkillBaseInitData
 {
     public int ownerID;
     public string skillKey;
@@ -20,7 +20,7 @@ public class SkillInteractionData
     public List<RWFactorData> factorSet = new List<RWFactorData>();
 }
 
-public class SLSkillBase : MonoBehaviour
+public class SLSkillBase : MonoBehaviour 
 {
     public int ownerID;
 
@@ -30,7 +30,7 @@ public class SLSkillBase : MonoBehaviour
 
     public List<RWFactorData> factorSet = new List<RWFactorData>();
 
-    public void InitSkillData(SLSkillInitData data)
+    public virtual void InitSkillData<T>(T data) where T : SLSkillBaseInitData
     {
         var tableSkillMeta = RWTableDataSkill.Config.GetSkillTableData(data.skillKey);
         ownerID = data.ownerID;

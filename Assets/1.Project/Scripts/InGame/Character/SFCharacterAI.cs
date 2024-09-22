@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UniRx.Triggers;
@@ -46,6 +47,20 @@ public class SFCharacterAI : SFCharacterBasePresenter
             viewInstance.transform.localPosition = Vector3.zero;
             viewInstance.transform.localScale = Vector3.one;
         });
+    }
+
+    private void Update()
+    {
+        RotateCharacter();
+        MoveCharacter();
+    }
+
+    private void RotateCharacter()
+    {
+    }
+
+    private void MoveCharacter()
+    {
     }
 
     private void HitEvent(Collider collider)

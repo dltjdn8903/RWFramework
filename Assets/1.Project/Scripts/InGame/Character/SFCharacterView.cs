@@ -15,6 +15,7 @@ public class AnimStateParameterName
 {
     public static string Idle => "Idle";
     public static string Move => "Move";
+    public static string Run => "Run";
 }
 
 [Serializable]
@@ -104,9 +105,10 @@ public class SFCharacterView : MonoBehaviour
 
     Coroutine endEventCorutine = null;
 
-    IEnumerator IEStartEndEvent(string animName, Action onEndEvent)
+    IEnumerator IEStartEndEvent(string animName, Action onStartEvent, Action onEndEvent)
     {
         bool isStart = false;
+        bool isEnd = false;
         while (!isStart)
         {
             yield return null;
@@ -116,12 +118,22 @@ public class SFCharacterView : MonoBehaviour
             }
         }
 
-        AnimatorStateInfo currentState = animator.GetCurrentAnimatorStateInfo(0);
-        yield return new WaitForSeconds(currentState.length / currentState.speed);
+        onStartEvent?.Invoke();
+
+        while (!isEnd)
+        {
+            yield return null;
+            AnimatorStateInfo currentState = animator.GetCurrentAnimatorStateInfo(0);
+            if (currentState.normalizedTime >= 1f)
+            {
+                isEnd = true;
+            }
+        }
+
         onEndEvent?.Invoke();
     }
 
-    public void PlayAnim(string animName, Action onEndEvent = null)
+    public void PlayAnim(string animName, Action onStartEvent = null, Action onEndEvent = null)
     {
         animator.SetTrigger(animName);
 
@@ -130,7 +142,7 @@ public class SFCharacterView : MonoBehaviour
             StopCoroutine(endEventCorutine);
         }
 
-        endEventCorutine = StartCoroutine(IEStartEndEvent(animName, onEndEvent));
+        endEventCorutine = StartCoroutine(IEStartEndEvent(animName, onStartEvent, onEndEvent));
     }
 
     public bool isSelfCollider(Collider collider)
@@ -138,7 +150,12 @@ public class SFCharacterView : MonoBehaviour
         bool result = false;
 
         var data = formColliderList.Find(value => value.colliders.Contains(collider) == false);
-        result = data != null;
+        if (data != null)
+        {
+            var sameCollider = data.colliders.Find(value => value.GetInstanceID() == collider.GetInstanceID());
+            result = sameCollider != null;
+        }
+
         return result;
     }
 
